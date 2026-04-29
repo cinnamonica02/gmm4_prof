@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+
+
+
 import asyncio
 import logging
 import subprocess
@@ -7,7 +10,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional
 
+
+
 logger = logging.getLogger(__name__)
+
+
+
+
+
 
 
 @dataclass
@@ -16,6 +26,10 @@ class GPUSnapshot:
     vram_used_mb: int
     vram_total_mb: int
     gpu_utilization_pct: int
+
+
+
+
 
 
 @dataclass
@@ -49,9 +63,13 @@ class GPUSummary:
         }
 
 
-class GPUMonitor:
-    """Polls nvidia-smi on a background asyncio task to track VRAM and GPU utilization."""
 
+
+
+
+
+
+class GPUMonitor:
     def __init__(self, poll_interval: float = 0.5) -> None:
         self.poll_interval = poll_interval
         self._task: Optional[asyncio.Task] = None
@@ -81,6 +99,8 @@ class GPUMonitor:
             logger.warning("nvidia-smi query failed: %s", exc)
             return None
 
+
+
     async def _poll_loop(self) -> None:
         loop = asyncio.get_event_loop()
         while self._running:
@@ -89,11 +109,17 @@ class GPUMonitor:
                 self.summary.snapshots.append(snapshot)
             await asyncio.sleep(self.poll_interval)
 
+
+
+
     def start(self) -> None:
         self._running = True
         self.summary = GPUSummary()
         self._task = asyncio.get_event_loop().create_task(self._poll_loop())
         logger.debug("GPU monitor started (poll_interval=%.1fs)", self.poll_interval)
+
+
+
 
     async def stop(self) -> GPUSummary:
         self._running = False

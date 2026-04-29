@@ -9,6 +9,9 @@ from openai import AsyncOpenAI
 
 from config import BenchmarkConfig
 
+
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,11 +27,6 @@ class RequestMetrics:
 
 
 class InferenceProfiler:
-    """Profiles individual inference requests against a vLLM OpenAI-compatible endpoint.
-
-    Uses streaming to capture TTFT precisely — the timer is stopped on the
-    first content chunk rather than waiting for the full response.
-    """
 
     def __init__(self, config: BenchmarkConfig) -> None:
         self.config = config
@@ -37,8 +35,9 @@ class InferenceProfiler:
             base_url=config.base_url,
         )
 
+
+
     async def profile_request(self, prompt: str) -> RequestMetrics:
-        """Send a single streaming request and return per-request metrics."""
         start_time = time.perf_counter()
         ttft: Optional[float] = None
         completion_tokens: int = 0
@@ -54,7 +53,6 @@ class InferenceProfiler:
             )
 
             async for chunk in stream:
-                # Record TTFT on first non-empty content chunk
                 if (
                     ttft is None
                     and chunk.choices
@@ -62,9 +60,16 @@ class InferenceProfiler:
                 ):
                     ttft = time.perf_counter() - start_time
 
+
+
                 # vLLM emits usage in the final chunk when include_usage=True
                 if chunk.usage and chunk.usage.completion_tokens:
                     completion_tokens = chunk.usage.completion_tokens
+
+
+
+
+
 
             total_latency = time.perf_counter() - start_time
             tps = completion_tokens / total_latency if total_latency > 0 else 0.0
@@ -96,6 +101,7 @@ class InferenceProfiler:
                 success=False,
                 error=str(exc),
             )
+            
 
     async def close(self) -> None:
         await self.client.close()

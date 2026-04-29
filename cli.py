@@ -11,6 +11,10 @@ from benchmarker import Benchmarker
 from config import BenchmarkConfig
 
 
+
+
+
+
 def setup_logging(verbose: bool = False) -> None:
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
@@ -20,6 +24,8 @@ def setup_logging(verbose: bool = False) -> None:
     )
 
 
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="bench",
@@ -27,7 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = p.add_subparsers(dest="command")
 
-    # ── run ───────────────────────────────────────────────────────────────────
+
     run = sub.add_parser("run", help="Run a benchmark against a live vLLM endpoint")
     run.add_argument("--model", required=True, help="HuggingFace model ID (e.g. google/gemma-4-E2B-it)")
     run.add_argument("--url", default="http://localhost:8000/v1", help="vLLM base URL (default: localhost)")
@@ -39,11 +45,15 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--prompts-file", help="Path to a JSON file with a list of prompt strings")
     run.add_argument("-v", "--verbose", action="store_true")
 
-    # ── compare ───────────────────────────────────────────────────────────────
+
     cmp = sub.add_parser("compare", help="Print a comparison table from saved result files")
     cmp.add_argument("files", nargs="+", metavar="RESULT_JSON")
 
     return p
+
+
+
+
 
 
 def _print_run_summary(s: dict) -> None:
@@ -59,6 +69,10 @@ def _print_run_summary(s: dict) -> None:
     print(f"{'─' * width}\n")
 
 
+
+
+
+
 def _print_comparison(files: list[str]) -> None:
     rows = []
     for f in files:
@@ -70,6 +84,9 @@ def _print_comparison(files: list[str]) -> None:
         f"{'TPS mean':>10} {'Tok/s':>8} {'Peak VRAM':>11}"
     )
     sep = "─" * len(header)
+
+
+
     print(f"\n{sep}\n{header}\n{sep}")
     for r in rows:
         if "error" in r:

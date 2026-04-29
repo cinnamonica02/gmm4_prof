@@ -12,6 +12,12 @@ from config import BenchmarkConfig
 from gpu_monitor import GPUMonitor, GPUSummary
 from profiler import InferenceProfiler, RequestMetrics
 
+
+
+
+
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,6 +35,9 @@ class BenchmarkResults:
         self.gpu_summary = gpu_summary
         self.config = config
         self.wall_time = wall_time
+
+
+
 
     @staticmethod
     def _percentile(values: list[float], pct: float) -> float:
@@ -82,6 +91,11 @@ class BenchmarkResults:
             "gpu": self.gpu_summary.to_dict(),
         }
 
+
+
+
+
+
     def save(self, output_dir: str = "results") -> Path:
         out = Path(output_dir)
         out.mkdir(parents=True, exist_ok=True)
@@ -117,11 +131,10 @@ class BenchmarkResults:
         return outfile
 
 
-class Benchmarker:
-    """Orchestrates concurrent inference requests against a vLLM endpoint
-    and collects TTFT, TPS, throughput, and VRAM metrics.
-    """
 
+
+
+class Benchmarker:
     def __init__(self, config: BenchmarkConfig) -> None:
         self.config = config
         self.profiler = InferenceProfiler(config)
@@ -136,7 +149,6 @@ class Benchmarker:
             return await self.profiler.profile_request(prompt)
 
     async def run(self) -> BenchmarkResults:
-        """Run the full benchmark suite and return results."""
         # Cycle through prompts to fill num_requests
         prompts = (self.config.prompts * self.config.num_requests)[: self.config.num_requests]
         sem = asyncio.Semaphore(self.config.concurrency)
